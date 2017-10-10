@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace RefactorKata
 {
@@ -7,35 +8,30 @@ namespace RefactorKata
     {
         static void Main(string[] args)
         {
-            //This is intentionally bad : (  Let's Refactor!
-            System.Data.SqlClient.SqlConnection Conn = new System.Data.SqlClient.SqlConnection("Server=.;Database=myDataBase;User Id=myUsername;Password = myPassword;");
+            //remove redundant using statement, unnecessary to repeat namespace, explicit to implicit "var" || "conn" = Camel Case//
+            var conn = new SqlConnection("Server=.;Database=myDataBase;User Id=myUsername;Password = myPassword;");
 
-            System.Data.SqlClient.SqlCommand cmd = Conn.CreateCommand();
+            var cmd = conn.CreateCommand();
             cmd.CommandText = "select * from Products";
-            /*
+            /* Is this line necessary @NHoltkamp
              * cmd.CommandText = "Select * from Invoices";
              */
-            System.Data.SqlClient.SqlDataReader reader = cmd.ExecuteReader();
-            List<Product> products = new List<Product>();
+            var reader = cmd.ExecuteReader();
+            var products = new List<Product>();
 
             //TODO: Replace with Dapper
+            //Awaiting class on relational Database//
             while (reader.Read())
             {
-                var prod = new Product();
-                prod.name = reader["Name"].ToString();
+                var prod = new Product {Name = reader["Name"].ToString()};
                 products.Add(prod);
             }
-            Conn.Dispose();
-            Console.WriteLine("Products Loaded!");
-            for (int i =0; i< products.Count; i++)
+            conn.Dispose();
+            
+            foreach (var product in products)
             {
-                Console.WriteLine(products[i].name);
+                Console.WriteLine(product.Name);
             }
         }
-    }
-    public class Product
-    {
-        public string name;
-        public string Name { get { return name; } set { name = value; } }
     }
 }
