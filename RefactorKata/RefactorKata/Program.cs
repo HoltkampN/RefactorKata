@@ -5,8 +5,8 @@ using System.Data.SqlClient;
 namespace RefactorKata
 {
     class Program
-    {
-        static void Main(string[] args)
+    {   //remove args//
+        static void Main (string[] args) 
         {
             //remove redundant using statement, unnecessary to repeat namespace, explicit to implicit "var" || "conn" = Camel Case//
             var conn = new SqlConnection("Server=.;Database=myDataBase;User Id=myUsername;Password = myPassword;");
@@ -27,11 +27,14 @@ namespace RefactorKata
                 products.Add(prod);
             }
             conn.Dispose();
+
+            //change loop//
             
             foreach (var product in products)
             {
                 Console.WriteLine(product.Name);
             }
+            // add new class//
         }
     }
 }
