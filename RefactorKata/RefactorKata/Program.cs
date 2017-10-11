@@ -4,37 +4,44 @@ using System.Data.SqlClient;
 
 namespace RefactorKata
 {
-    class Program
-    {   //remove args//
-        static void Main (string[] args) 
+    internal class Program
+    {
+        static void Main(string[] args)
         {
-            //remove redundant using statement, unnecessary to repeat namespace, explicit to implicit "var" || "conn" = Camel Case//
-            var conn = new SqlConnection("Server=.;Database=myDataBase;User Id=myUsername;Password = myPassword;");
+            var products = GetProducts();
 
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = "select * from Products";
-            /* Is this line necessary @NHoltkamp
-             * cmd.CommandText = "Select * from Invoices";
-             */
-            var reader = cmd.ExecuteReader();
-            var products = new List<Product>();
-
-            //TODO: Replace with Dapper
-            //Awaiting class on relational Database//
-            while (reader.Read())
-            {
-                var prod = new Product {Name = reader["Name"].ToString()};
-                products.Add(prod);
-            }
-            conn.Dispose();
-
-            //change loop//
-            
             foreach (var product in products)
             {
-                Console.WriteLine(product.Name);
+                Console.WriteLine("This product is called: " + product.Name);
             }
-            // add new class//
+        }
+
+        private static IEnumerable<Product> GetProducts()
+        {
+
+            using (var conn =
+                new SqlConnection("Server=.;Database=myDataBase;User Id=myUsername;Password = myPassword;"))
+            {
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = "select * from Products";
+
+                var reader = cmd.ExecuteReader();
+                var products = new List<Product>();
+
+
+
+                while (reader.Read())
+                {
+
+                    var prod = new Product { Name = reader["Name"].ToString() };
+                    products.Add(prod);
+
+                }
+
+
+                Console.WriteLine("Products Loaded");
+                return products;
+            }
         }
     }
 }
